@@ -39,8 +39,33 @@ function line(ax, ay, bx, by) {
 	}
 }
 
-function circle(x, y, r) {
-	
+function circle(cx, cy, r) {
+	var x = 0
+	var y = r
+
+	var delta = 1 - 2*r
+	var error = 0
+
+	while(y>=0) {
+		dot(cx+x, cy+y)
+		dot(cx+x, cy-y)
+		dot(cx-x, cy+y)
+		dot(cx-x, cy-y)
+
+		error = 2 * (delta + y) - 1
+		if(delta<0 && error<=0) {
+			delta +=2 * ++x + 1
+			continue
+		}
+		error = 2 * (delta - x) - 1
+		if(delta>0 && error>0) {
+			delta += 1 -2* --y
+			continue
+		}
+		x++
+		delta += 2* (x-y)
+		y--
+	}
 }
 
 
@@ -54,6 +79,8 @@ function paint() {
 	for(var i=0; i<10; i++) {
 		line(0, 0, 100, 11.1111*i)
 	}
+
+	circle(200, 70, 53)
 }
 
 scale = document.querySelectorAll('#scale')[0].onchange = paint
