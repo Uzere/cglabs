@@ -4,16 +4,20 @@ var scale = 3
 
 var abs = Math.abs
 
-var dot = (x, y) => { ctx.fillStyle='#000000'; ctx.fillRect(x*scale, y*scale, 1*scale, 1*scale) }
+var color = '#000'
+
+var animate = false
+
+var dot = (x, y) => { ctx.fillStyle=color; ctx.fillRect((x|0)*scale, (y|0)*scale, 1*scale, 1*scale) }
 
 function line(ax, ay, bx, by) {
 	var steep = false
-	if(abs(ax-bx)<abs(ay-bx)) {
+	if(abs(ax-bx)<abs(ay-by)) {
 		ax = ay + (ay=ax, 0) // swap swap swap
 		bx = by + (by=bx, 0)
 		steep = true
 	}
-	if(ax>ay) {
+	if(ax>bx) {
 		ax = bx + (bx=ax, 0)
 		ay = by + (by=ay, 0)
 	}
@@ -39,7 +43,7 @@ function line(ax, ay, bx, by) {
 	}
 }
 
-function circle(cx, cy, r) {
+function circle2(cx, cy, r) { // не совсем круглое, шире на 2px
 	var x = 0
 	var y = r
 
@@ -68,21 +72,68 @@ function circle(cx, cy, r) {
 	}
 }
 
+function circle(cx, cy, r) {
+	var dfs = 6, dfd = 4*(-r)+10;
+	var F = -2 * r +3 // ??? //+ (r-1)*(r-1) + 1//-103; // 53^2 + 1^2 + 52^2 + 1^2 - 2*53^2
+	var x = -r, y = 0;
+	var x0=cx, y0=cy;
+	while (x+y<=0) {
+		dot(x0+x, y0+y)
+		dot(x0-x, y0+y)
+		dot(x0+x, y0-y)
+		dot(x0-x, y0-y)
+		dot(x0+y, y0+x)
+		dot(x0-y, y0+x)
+		dot(x0+y, y0-x)
+		dot(x0-y, y0-x)
+		if (F>0) {
+			x++;
+			F+=dfd;
+			dfd+=4;
+		} else {
+			F+=dfs;
+		}
+		dfd+=4;
+		dfs+=4;
+		y++;
+	}
+}
 
-
+var animFrame = 0
 
 function paint() {
 	ctx.fillStyle = '#FFF'
 	ctx.fillRect(0, 0, 1000, 500)
 	scale = document.querySelectorAll('#scale')[0].value
 
+	//color = '#000'
+
 	for(var i=0; i<10; i++) {
-		line(0, 0, 100, 11.1111*i)
+		line(0, 0, 100, 11.1111*i+animFrame)
 	}
 
 	circle(200, 70, 53)
+	circle(200, 70, 43)
+	circle(200, 70, 33+animFrame)
+
+	//color = '#F00'
+	//circle(200, 70, 34)
 }
 
-scale = document.querySelectorAll('#scale')[0].onchange = paint
+document.querySelectorAll('#scale')[0].onchange = paint
+document.querySelectorAll('#anim')[0].onchange = ()=>{animate=!animate}
+
+setInterval(function() {
+	if(animate) {
+		animFrame++
+		if(animFrame==11) {
+			animFrame=0
+		}
+		color = '#'+((Math.random()*1000000/2+100000)|0)
+	} else {
+		animFrame = 0
+	}
+	paint()
+}, 100)
 
 paint()
