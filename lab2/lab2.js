@@ -276,7 +276,7 @@ function paint() {
 }
 
 document.querySelectorAll('#scale')[0].onchange = paint
-document.querySelectorAll('#anim')[0].onchange = ()=>{animate=!animate}
+//document.querySelectorAll('#anim')[0].onchange = ()=>{animate=!animate}
 
 document.querySelectorAll('#canvas')[0].addEventListener('click', e=>{
 	//e.preventDefault()
